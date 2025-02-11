@@ -6,6 +6,10 @@ from footgram_backend.constans import MAX_LENGTH_EMAIL, MAX_LENGTH_USER_NAME
 
 
 class User(AbstractUser):
+
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'username', 'password']
+    USERNAME_FIELD = 'email'
+
     username = models.CharField(
         max_length=MAX_LENGTH_USER_NAME,
         unique=True,
