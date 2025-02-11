@@ -6,13 +6,12 @@ from recipes.models import Ingredient
 
 
 class Command(BaseCommand):
-    """Команда для импорта ингредиетов в базу"""
+    """Команда для импорта ингредиетов в базу."""
 
     help = 'Импорт ингредиентов'
 
     def handle(self, *args, **options):
         """Тело команды."""
-
         with open('data/ingredients.json', 'r') as file:
             data = json.load(file)
 

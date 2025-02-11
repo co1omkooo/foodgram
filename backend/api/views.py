@@ -136,9 +136,9 @@ class CustomUserViewSet(UserViewSet):
         )
 
     @action(
-            detail=False,
-            methods=['GET'],
-            permission_classes=[IsAuthenticated]
+        detail=False,
+        methods=['GET'],
+        permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request):
         user = request.user
