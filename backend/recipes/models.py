@@ -2,7 +2,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
-from footgram_backend.constans import (
+from foodgram_backend.constans import (
     MAX_LENGTH_TAG_SLUG,
     MAX_LENGTH_SHORT_LINK,
     MAX_LENGTH_INGREDIENT_NAME,
