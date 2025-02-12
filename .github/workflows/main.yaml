@@ -1,4 +1,4 @@
-name: Main Foodgram workflow
+name: Main Foodgram Workflow
 
 on: push
 jobs:
