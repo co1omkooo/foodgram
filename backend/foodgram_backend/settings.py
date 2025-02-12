@@ -4,7 +4,7 @@ from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 from dotenv import load_dotenv
 
-from footgram_backend.constans import PAGE_SIZE
+from foodgram_backend.constans import PAGE_SIZE
 
 load_dotenv()
 
@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'footgram_backend.urls'
+ROOT_URLCONF = 'foodgram_backend.urls'
 
 TEMPLATES = [
     {
@@ -62,7 +62,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'footgram_backend.wsgi.application'
+WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
 
 # Database
