@@ -13,14 +13,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Тело команды."""
         with open('data/ingredients.json', 'r') as file:
-            data = json.load(file)
-
-        for note in data:
+            ingredients_to_create = []
+            for note in json.load(file):
+                try:
+                    ingredients_to_create.append(Ingredient(**note))
+                    print(f"{note['name']} в базе")
+                except Exception as error:
+                    print(
+                        f"Ошибка добавления {note['name']}.\n"
+                        f"Текст - {error}"
+                    )
             try:
-                Ingredient.objects.get_or_create(**note)
-                print(f"{note['name']} в базе")
+                Ingredient.objects.bulk_create(ingredients_to_create)
+                print('Загрузка ингредиентов завершена')
             except Exception as error:
-                print(f"Ошибка при добавлении {note['name']}.\n"
-                      f"Текст - {error}")
-
-        print('Загрузка ингредиентов завершена')
+                print(
+                    f"Ошибка при массовом добавлении.\n"
+                    f"Текст - {error}"
+                )
