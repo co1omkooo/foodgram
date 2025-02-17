@@ -1,20 +1,19 @@
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.core.validators import MinValueValidator, MaxLengthValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils import timezone
 
 from recipes.constans import (
     MAX_LENGTH_TAG_SLUG,
-    MAX_LENGTH_SHORT_LINK,
     MAX_LENGTH_INGREDIENT_NAME,
     MAX_LENGTH_RECIPE_NAME,
     MAX_LENGTH_MEASUREMENT_UNIT,
     LIMIT_TEXT,
     MAX_LENGTH_EMAIL,
     MAX_LENGTH_USER_NAME,
-    MIN_VALUE_COOKING_TIME,
-    MIN_VALUE_AMOUNT,
+    MIN_COOKING_TIME,
+    MIN_AMOUNT,
 )
 
 
@@ -27,7 +26,7 @@ class User(AbstractUser):
         max_length=MAX_LENGTH_USER_NAME,
         unique=True,
         validators=[UnicodeUsernameValidator()],
-        verbose_name='Ник пользователя',
+        verbose_name='Ник',
     )
     email = models.EmailField(
         max_length=MAX_LENGTH_EMAIL,
@@ -111,12 +110,10 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=MAX_LENGTH_INGREDIENT_NAME,
-        validators=(MaxLengthValidator,),
         verbose_name='Наименование'
     )
     measurement_unit = models.CharField(
         max_length=MAX_LENGTH_MEASUREMENT_UNIT,
-        validators=(MaxLengthValidator,),
         verbose_name='Единица измерения'
     )
 
@@ -158,8 +155,8 @@ class Recipe(models.Model):
         verbose_name='Теги'
     )
     cooking_time = models.PositiveIntegerField(
-        verbose_name='Время приготовления',
-        validators=[MinValueValidator(MIN_VALUE_COOKING_TIME)],
+        verbose_name='Время приготовления, мин.',
+        validators=[MinValueValidator(MIN_COOKING_TIME)],
     )
     created_at = models.DateTimeField(default=timezone.now)
 
@@ -185,7 +182,7 @@ class RecipeIngredient(models.Model):
         verbose_name='Продукт'
     )
     amount = models.PositiveIntegerField(
-        validators=[MinValueValidator(MIN_VALUE_AMOUNT)],
+        validators=[MinValueValidator(MIN_AMOUNT)],
         verbose_name='Мера'
     )
 
@@ -243,16 +240,3 @@ class ShoppingCart(UserRecipeBase):
         default_related_name = 'shopping_carts'
         verbose_name = 'Корзина покупок'
         verbose_name_plural = 'корзина покупок'
-
-
-class ShortLink(models.Model):
-    short_link = models.CharField(
-        verbose_name='Короткая ссылка',
-        max_length=MAX_LENGTH_SHORT_LINK,
-        unique=True,
-        blank=True,
-        null=True
-    )
-
-    def __str__(self):
-        return f'{self.short_link}'

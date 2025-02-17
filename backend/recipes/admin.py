@@ -15,8 +15,14 @@ from .models import (
 )
 
 
+class RecipesCountMixin:
+    @admin.display(description='Рецепты')
+    def recipes_count(self, object):
+        return object.recipe.count()
+
+
 @admin.register(User)
-class UserAdmin(UserAdmin):
+class UserAdmin(UserAdmin, RecipesCountMixin):
     list_display = (
         'pk',
         'username',
@@ -26,12 +32,12 @@ class UserAdmin(UserAdmin):
         'avatar',
         'subscription_count',
         'subscriber_count',
-        'recipe_count'
+        'recipes_count'
     )
     search_fields = ('username', 'email')
     empty_value_display = '-пусто-'
 
-    @admin.display(description='Автар')
+    @admin.display(description='Аватар')
     @mark_safe
     def get_avatar(self, user):
         return f'<img src="{user.image.url}" width="50" height="50">'
@@ -44,22 +50,12 @@ class UserAdmin(UserAdmin):
     def subscriber_count(self, user):
         return user.authors.count()
 
-    @admin.display(description='Рецепты')
-    def recipe_count(self, user):
-        return user.recipes.count()
-
 
 @admin.register(Subscription)
 class SubscribeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'follower', 'author')
     list_editable = ('follower', 'author')
     empty_value_display = '-пусто-'
-
-
-class RecipesCountMixin:
-    @admin.display(description='Рецепты')
-    def recipes_count(self, object):
-        return object.recipes.count()
 
 
 @admin.register(Tag)
@@ -103,7 +99,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'image_display',
     )
     search_fields = ('author', 'name',)
-    list_filter = ('tags',)
+    list_filter = ('tags', 'author',)
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -111,32 +107,30 @@ class RecipeAdmin(admin.ModelAdmin):
         return queryset
 
     @admin.display(description='Время (мин)')
-    def cooking_time_display(self, receipt):
-        return receipt.cooking_time
+    def cooking_time_display(self, recipe):
+        return recipe.cooking_time
 
     @admin.display(description='Теги')
     @mark_safe
-    def tags_display(self, receipt):
-        return '<br>'.join(map(str, receipt.tags.all()))
+    def tags_display(self, recipe):
+        return '<br>'.join(map(str, recipe.tags.all()))
 
     @admin.display(description='Картинка')
     @mark_safe
-    def image_display(self, receipt):
-        return f'<img src="{receipt.image.url}" width="50" height="50">'
+    def image_display(self, recipe):
+        return f'<img src="{recipe.image.url}" width="50" height="50">'
 
     @admin.display(description='Продукты')
     @mark_safe
-    def ingredients_display(self, receipt):
+    def ingredients_display(self, recipe):
         return '<br>'.join(
-            [
-                f'{ingredient_in_receipt.ingredient.name}, '
-                f'{ingredient_in_receipt.ingredient.measurement_unit}, '
-                f'{ingredient_in_receipt.amount}'
-                for ingredient_in_receipt in
-                receipt.ingredients_in_receipts.all()
-            ]
+            f'{recipe_ingredients.ingredient.name}, '
+            f'{recipe_ingredients.ingredient.measurement_unit}, '
+            f'{recipe_ingredients.amount}'
+            for recipe_ingredients in
+            recipe.recipe_ingredients.all()
         )
 
-    @admin.display(description='Кол-во в избранном')
+    @admin.display(description='В избранном')
     def favourite_count(self, favourite):
         return favourite.fav_count

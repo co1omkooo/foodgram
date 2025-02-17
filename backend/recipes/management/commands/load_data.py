@@ -1,4 +1,4 @@
-import json
+import os
 
 from django.core.management.base import BaseCommand
 
@@ -8,26 +8,26 @@ from recipes.models import Ingredient
 class Command(BaseCommand):
     """Команда для импорта ингредиетов в базу."""
 
-    help = 'Импорт ингредиентов'
+    help = 'Импорт данных'
+    model = Ingredient
 
     def handle(self, *args, **options):
         """Тело команды."""
-        with open('data/ingredients.json', 'r') as file:
-            ingredients_to_create = []
-            for note in json.load(file):
-                try:
-                    ingredients_to_create.append(Ingredient(**note))
-                    print(f"{note['name']} в базе")
-                except Exception as error:
-                    print(
-                        f"Ошибка добавления {note['name']}.\n"
-                        f"Текст - {error}"
-                    )
-            try:
-                Ingredient.objects.bulk_create(ingredients_to_create)
-                print('Загрузка ингредиентов завершена')
-            except Exception as error:
+        path = 'data/ingredients.json'
+        file_name = os.path.basename(path)
+        try:
+            with open(path, 'r') as file:
+                ingredients_to_create = [
+                    self.model(**note) for note in file
+                ]
+                self.model.objects.bulk_create(ingredients_to_create)
                 print(
-                    f"Ошибка при массовом добавлении.\n"
-                    f"Текст - {error}"
+                    f'Загрузка данных завершена\n'
+                    f'В количестве {len(ingredients_to_create)} шт.'
                 )
+        except Exception as error:
+            print(
+                f'Ошибка при массовом добавлении.\n'
+                f'Текст - {error}\n'
+                f'Имя файла - {file_name}'
+            )

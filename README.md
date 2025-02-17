@@ -77,7 +77,7 @@
 Настроить запуск проекта Foodgram в контейнерах и CI/CD с помощью GitHub Actions
 Находясь в папке infra, выполните команду docker-compose up. При выполнении этой команды контейнер frontend, описанный в docker-compose.yml, подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
 
-По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
+Изучите [фронтенд веб-приложения](http://localhost) и [спецификацию API](http://localhost/api/docs/).
 
 ## Автор
 [Shevchenko Demid](https://github.com/co1omkooo)
