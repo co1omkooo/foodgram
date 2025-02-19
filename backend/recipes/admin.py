@@ -18,7 +18,7 @@ from .models import (
 class RecipesCountMixin:
     @admin.display(description='Рецепты')
     def recipes_count(self, object):
-        return object.recipe.count()
+        return object.recipes.count()
 
 
 @admin.register(User)
