@@ -1,3 +1,5 @@
+from collections import Counter
+
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer as DjoserUserSerializer
 from drf_extra_fields.fields import Base64ImageField
@@ -136,9 +138,9 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         )
 
     def dublicate_ingredients_tags(self, objs):
-        if len(set(objs)) != len(objs):
-            seen = set()
-            duplicates = [obj for obj in objs if obj in seen or seen.add(obj)]
+        counter = Counter(objs)
+        duplicates = [obj for obj, count in counter.items() if count > 1]
+        if duplicates:
             raise serializers.ValidationError(
                 f'Обнаружены дублирующиеся объекты: {duplicates}'
             )

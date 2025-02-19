@@ -1,5 +1,3 @@
-from io import BytesIO
-
 from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.http import FileResponse, Http404
@@ -95,10 +93,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def get_short_link(self, request, pk):
         if not Recipe.objects.filter(id=pk).exists():
-            raise Http404("Рецепт с id={pk} не найден.")
+            raise Http404(f'Рецепт с id={pk} не найден.')
         return Response(
             {'short-link': request.build_absolute_uri(
-                reverse('api:recipe-detail', kwargs={'pk': pk})
+                reverse('recipes:redirect_short_link', args=[pk])
             )},
             status=status.HTTP_200_OK
         )
@@ -124,12 +122,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .select_related('author')
             .distinct()
         )
-        shopping_list_text = generate_shopping_list(
-            ingredients_in_recipe,
-            recipes_in_cart
+        generate_shopping_list(
+            ingredients_in_recipe, recipes_in_cart
         )
         return FileResponse(
-            BytesIO(shopping_list_text.encode('utf-8')),
             as_attachment=True,
             filename='shopping_list.txt',
             content_type='text/plain; charset=utf-8'

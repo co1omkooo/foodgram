@@ -1,4 +1,4 @@
-from load_data import BaseImportCommand
+from .load_data import BaseImportCommand
 
 from recipes.models import Ingredient
 

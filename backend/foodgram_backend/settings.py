@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from django.core.management.utils import get_random_secret_key
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -59,7 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
-db_engine = os.getenv('DB_ENGINE', 'sqlite')
+db_engine = os.getenv('DB_ENGINE', 'postgresql')
 
 if db_engine == 'postgresql':
     DATABASES = {

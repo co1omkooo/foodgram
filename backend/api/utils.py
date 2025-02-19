@@ -3,7 +3,7 @@ from datetime import datetime
 
 def generate_shopping_list(ingredients, recipes):
     current_date = datetime.now().strftime('%d.%m.%Y')
-    shopping_list = ['Список покупок ({}):\n'.format(current_date)]
+    shopping_list = ['Список покупок ({}):'.format(current_date), '']
     shopping_list.extend(
         '{}. {} ({}) — {}'.format(
             i,
