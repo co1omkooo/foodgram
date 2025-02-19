@@ -15,7 +15,7 @@ def generate_shopping_list(ingredients, recipes):
     )
     shopping_list.append('Рецепты:')
     shopping_list.extend(
-        '- {} (автор: {})'.format(recipe['name'], recipe['author'])
+        '- {} (автор: {})'.format(recipe.name, recipe.author.username)
         for recipe in recipes
     )
     return '\n'.join(shopping_list)
