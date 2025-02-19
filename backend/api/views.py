@@ -97,7 +97,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if not Recipe.objects.filter(id=pk).exists():
             raise Http404("Рецепт с id={pk} не найден.")
         return Response(
-            {'short-link': reverse('api:recipe-detail', kwargs={'pk': pk})},
+            {'short-link': request.build_absolute_uri(
+                reverse('api:recipe-detail', kwargs={'pk': pk})
+            )},
             status=status.HTTP_200_OK
         )
 
@@ -126,9 +128,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ingredients_in_recipe,
             recipes_in_cart
         )
-        shopping_list_bytes = BytesIO(shopping_list_text.encode('utf-8'))
         return FileResponse(
-            shopping_list_bytes,
+            BytesIO(shopping_list_text.encode('utf-8')),
             as_attachment=True,
             filename='shopping_list.txt',
             content_type='text/plain; charset=utf-8'
@@ -179,26 +180,26 @@ class UserViewSet(DjoserUserViewSet):
     )
     def subscribe(self, request, **kwargs):
         author = get_object_or_404(User, pk=kwargs['id'])
-        if request.method == 'POST':
-            if request.user == author:
-                raise ValidationError(
-                    {'detail': 'Вы не можете подписаться на себя.'}
-                )
-            _, created = Subscription.objects.get_or_create(
-                follower=request.user, author=author
+        if request.method == 'DELETE':
+            get_object_or_404(
+                Subscription, follower=request.user, author=author
+            ).delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        if request.user == author:
+            raise ValidationError(
+                {'detail': 'Нельзя подписаться на самого себя.'}
             )
-            if not created:
-                raise ValidationError(
-                    {'detail': f'Вы уже подписаны на - {author}'}
-                )
-            serializer = UserSubscriberSerializer(
-                author, context={'request': request}
+        _, created = Subscription.objects.get_or_create(
+            follower=request.user, author=author
+        )
+        if not created:
+            raise ValidationError(
+                {'detail': f'Вы уже подписаны на - {author}'}
             )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        get_object_or_404(
-            Subscription, follower=request.user, author=author
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        serializer = UserSubscriberSerializer(
+            author, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
         detail=False,

@@ -137,15 +137,10 @@ class PostRecipeSerializer(serializers.ModelSerializer):
 
     def dublicate_ingredients_tags(self, objs):
         if len(set(objs)) != len(objs):
-            duplicates = []
             seen = set()
-            for obj in objs:
-                if obj in seen:
-                    duplicates.append(obj)
-                else:
-                    seen.add(obj)
+            duplicates = [obj for obj in objs if obj in seen or seen.add(obj)]
             raise serializers.ValidationError(
-                f'Обнаружены дублирующиеся продукты: {duplicates}'
+                f'Обнаружены дублирующиеся объекты: {duplicates}'
             )
 
     def validate(self, attrs):
