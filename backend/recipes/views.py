@@ -7,5 +7,5 @@ from .models import Recipe
 def redirect_short_link(request, pk):
     """Перенаправляет на полный URL рецепта."""
     if not Recipe.objects.filter(id=pk).exists():
-        raise Http404('Рецепт не найден.')
-    return redirect('api:recipes-detail', kwargs={'pk': pk})
+        raise Http404(f'Рецепт c id {pk} не найден.')
+    return redirect('api:recipe-detail', pk)

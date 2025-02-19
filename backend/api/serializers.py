@@ -74,10 +74,10 @@ class UserRecipesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
-        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = fields
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class GetRecipeSerializer(serializers.ModelSerializer):
     """Сериализатор для получения рецепта."""
 
     ingredients = RecipeIngredientSerializer(
@@ -109,7 +109,9 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 class PostRecipeSerializer(serializers.ModelSerializer):
     tags = serializers.PrimaryKeyRelatedField(
-        queryset=Tag.objects.all(), many=True
+        queryset=Tag.objects.all(),
+        required=True,
+        many=True
     )
     author = UserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
@@ -134,10 +136,16 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         )
 
     def dublicate_ingredients_tags(self, objs):
-
         if len(set(objs)) != len(objs):
+            duplicates = []
+            seen = set()
+            for obj in objs:
+                if obj in seen:
+                    duplicates.append(obj)
+                else:
+                    seen.add(obj)
             raise serializers.ValidationError(
-                f'Продыкты не должны дублироваться - {objs}'
+                f'Обнаружены дублирующиеся продукты: {duplicates}'
             )
 
     def validate(self, attrs):
@@ -150,11 +158,11 @@ class PostRecipeSerializer(serializers.ModelSerializer):
             )
         if not tags:
             raise serializers.ValidationError(
-                'Поле tags обязательное'
+                'Набор tags не может быть пустым'
             )
         if not ingredients:
             raise serializers.ValidationError(
-                'Поле ingredients обязательное'
+                'Набор ingredients не может быть пустым'
             )
         ingredients_ids = [
             ingredient.get('ingredient').id for ingredient in ingredients
@@ -190,7 +198,7 @@ class PostRecipeSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
-        return RecipeSerializer(
+        return GetRecipeSerializer(
             instance,
             context=self.context
         ).data
