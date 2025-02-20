@@ -60,7 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram_backend.wsgi.application'
 
-db_engine = os.getenv('DB_ENGINE', 'sqlite3')
+db_engine = os.getenv('DB_ENGINE', 'postgresql')
 
 if db_engine == 'postgresql':
     DATABASES = {
