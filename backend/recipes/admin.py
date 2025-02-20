@@ -29,9 +29,9 @@ class RecipesCountMixin:
 
 @admin.register(User)
 class UserAdmin(UserAdmin, RecipesCountMixin):
-    fieldsets = (
-        ('Персональные данные',
-         {'fields': ('first_name', 'last_name', 'email', 'avatar')}),
+    fieldsets = UserAdmin.fieldsets + (
+        ('Дополнительные поля',
+         {'fields': ('avatar',)}),
     )
     list_display = (
         'pk',

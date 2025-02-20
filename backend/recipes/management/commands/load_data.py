@@ -19,11 +19,15 @@ class BaseImportCommand(BaseCommand):
         file_name = os.path.basename(path)
         try:
             with open(path, 'r', encoding='UTF-8') as file:
+                initial_count = self.model.objects.count()
                 new_notes = [
                     self.model(**note) for note in json.load(file)
                 ]
-                self.model.objects.bulk_create(new_notes)
-                created_count = len(new_notes)
+                self.model.objects.bulk_create(
+                    new_notes, ignore_conflicts=True
+                )
+                final_count = self.model.objects.count()
+                created_count = final_count - initial_count
                 print(
                     f'Загрузка данных завершена\n'
                     f'Добавлено {created_count} новых.'
