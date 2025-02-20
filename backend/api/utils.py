@@ -9,7 +9,7 @@ def generate_shopping_list(ingredients, recipes):
     current_month = datetime.now().month
     shopping_list = [
         'Список покупок ({}):'.format(months_ru[current_month - 1]), ''
-        ]
+    ]
     shopping_list.extend(
         '{}. {} ({}) — {}'.format(
             i,
