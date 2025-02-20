@@ -96,7 +96,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             raise Http404(f'Рецепт с id={pk} не найден.')
         return Response(
             {'short-link': request.build_absolute_uri(
-                reverse('recipes:redirect_short_link', kwargs={'pk': pk})
+                reverse('recipes:redirect_short_link', args={pk})
             )},
             status=status.HTTP_200_OK
         )
