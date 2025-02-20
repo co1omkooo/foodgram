@@ -1,7 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 from django.db.models import Count
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from .models import (
@@ -12,8 +14,9 @@ from .models import (
     ShoppingCart,
     Tag,
     Subscription,
-    User
 )
+
+User = get_user_model()
 
 admin.site.unregister(Group)
 
@@ -26,24 +29,35 @@ class RecipesCountMixin:
 
 @admin.register(User)
 class UserAdmin(UserAdmin, RecipesCountMixin):
+    fieldsets = (
+        ('Персональные данные',
+         {'fields': ('first_name', 'last_name', 'email', 'avatar')}),
+    )
     list_display = (
         'pk',
         'username',
         'first_name',
         'last_name',
         'email',
-        'avatar',
+        'avatar_preview',
         'subscription_count',
         'subscriber_count',
-        'recipes_count'
+        'recipes_count',
     )
     search_fields = ('username', 'email')
     empty_value_display = '-пусто-'
 
     @admin.display(description='Аватар')
     @mark_safe
-    def get_avatar(self, user):
-        return f'<img src="{user.image.url}" width="50" height="50">'
+    def avatar_preview(self, user):
+        if user.avatar:
+            return (
+                format_html(
+                    '<img src="{}" width="50" height="50"; />',
+                    user.avatar.url
+                )
+            )
+        return 'Нет аватара'
 
     @admin.display(description='Подписки')
     def subscription_count(self, user):
@@ -78,6 +92,7 @@ class UserRecipeAdmin(admin.ModelAdmin):
 class IngredientAdmin(admin.ModelAdmin, RecipesCountMixin):
     list_display = ('id', 'name', 'measurement_unit', 'recipes_count',)
     search_fields = ('name', 'measurement_unit',)
+    list_filter = ('measurement_unit',)
 
 
 @admin.register(RecipeIngredient)
