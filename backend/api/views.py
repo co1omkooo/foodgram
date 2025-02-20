@@ -122,10 +122,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             .select_related('author')
             .distinct()
         )
-        generate_shopping_list(
-            ingredients_in_recipe, recipes_in_cart
+        shopping_list_text = generate_shopping_list(
+            ingredients_in_recipe,
+            recipes_in_cart
         )
         return FileResponse(
+            shopping_list_text,
             as_attachment=True,
             filename='shopping_list.txt',
             content_type='text/plain; charset=utf-8'
